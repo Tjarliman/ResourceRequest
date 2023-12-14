@@ -1,3 +1,5 @@
+This is applicable if only the source txt table is language dependent or has langu/spras field
+
 First, in the source data cds view, we need to use this annotation  @ObjectModel.text.element: [<field_name_of_the_txt>], example
 @AbapCatalog.viewEnhancementCategory: [#NONE]
 @AccessControl.authorizationCheck: #NOT_REQUIRED
