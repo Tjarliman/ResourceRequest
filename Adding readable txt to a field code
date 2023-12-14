@@ -73,6 +73,7 @@ define root view entity ZTJ_DM_REQUEST
 3rd, in the "projection cds view", we need to add annotation  @ObjectModel.text.element: [<field_name_of_the_txt>], a
 add the association name into this projection view, and add the field_name_of_the_text field into this projection view with addition ": localized",
 complete sample as below
+Note: localized will make the field not appearing in its own field in the screen, instead it will be appeared in the code field...coolll!!!
 @AccessControl.authorizationCheck: #NOT_REQUIRED
 @Metadata.allowExtensions: true
 @EndUserText.label: 'Projection View for ZTJ_DM_REQUEST'
