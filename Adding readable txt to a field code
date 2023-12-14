@@ -25,3 +25,48 @@ where
 define root view entity ZTJ_DM_REQUEST
   as select from ztj_request as Request
     association [1..*] to ZTJ_VH_REQSTAT as _Stat on $projection.StaID = _Stat.StaID
+
+complete code as below:
+@AccessControl.authorizationCheck: #NOT_REQUIRED
+@EndUserText.label: '##GENERATED Request RAP Generated'
+define root view entity ZTJ_DM_REQUEST
+  as select from ztj_request as Request
+    association [1..*] to ZTJ_VH_REQSTAT as _Stat on $projection.StaID = _Stat.StaID
+{
+  key reqid as ReqID,
+  key prjid as PrjID,
+  key sprid as SprID,
+  reqds as Reqds,
+  reqor as Reqor,
+  reqdt as Reqdt,
+  resid as ResID,
+  reqcd as Reqcd,
+  plstdt as Plstdt,
+  plfndt as Plfndt,
+  acstdt as Acstdt,
+  acfndt as Acfndt,
+  @Consumption.valueHelpDefinition: [{entity: { name: 'ZTJ_VH_REQSTAT', 
+                                                      element: 'StaID'  }}]  
+  //@ObjectModel.text.association: '_Stat'  
+  staid as StaID,
+  @Semantics.user.createdBy: true
+  crtby as Crtby,
+  @Semantics.systemDate.createdAt: true
+  crtdt as Crtdt,
+  @Semantics.systemTime.createdAt: true
+  crttm as Crttm,
+  @Semantics.systemDateTime.createdAt: true
+  crtst as Crtst,
+  @Semantics.user.lastChangedBy: true
+  chgby as Chgby,
+  @Semantics.systemDate.createdAt: true
+  chgdt as Chgdt,
+  @Semantics.systemTime.createdAt: true
+  chgtm as Chgtm,
+  @Semantics.systemDateTime.lastChangedAt: true
+  chgst as Chgst,
+  
+  _Stat
+  
+}
+
