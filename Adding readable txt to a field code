@@ -1,0 +1,22 @@
+First, in the source data cds view, we need to use this annotation  @ObjectModel.text.element: [<field_name_of_the_txt>], example
+@AbapCatalog.viewEnhancementCategory: [#NONE]
+@AccessControl.authorizationCheck: #NOT_REQUIRED
+@EndUserText.label: 'Value help for Request Status'
+@Metadata.ignorePropagatedAnnotations: true
+@ObjectModel.usageType:{
+    serviceQuality: #X,
+    sizeCategory: #S,
+    dataClass: #MIXED
+}
+define view entity ZTJ_VH_REQSTAT
+  as select from ztj_reqstat_txt
+{
+      @ObjectModel.text.element: ['Stads']
+  key staid as StaID,
+      //@Semantics.language: true
+  key spras as Spras,
+      //@Semantics.text: true
+      stads as Stads
+}
+where
+  spras = 'E'
