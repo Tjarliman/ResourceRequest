@@ -20,3 +20,8 @@ define view entity ZTJ_VH_REQSTAT
 }
 where
   spras = 'E'
+
+2nd, in the "Interface CDS view", we need to associate the main entity to the txt cds view like 
+define root view entity ZTJ_DM_REQUEST
+  as select from ztj_request as Request
+    association [1..*] to ZTJ_VH_REQSTAT as _Stat on $projection.StaID = _Stat.StaID
