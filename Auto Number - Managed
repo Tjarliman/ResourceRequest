@@ -166,3 +166,48 @@ authorization master( global )
     Chgst = CHGST;
   }
 }
+
+5th, modify the class similar to below
+CLASS LCL_HANDLER DEFINITION INHERITING FROM CL_ABAP_BEHAVIOR_HANDLER.
+  PRIVATE SECTION.
+    METHODS:
+      GET_GLOBAL_AUTHORIZATIONS FOR GLOBAL AUTHORIZATION
+        IMPORTING
+           REQUEST requested_authorizations FOR Request
+        RESULT result.
+
+    METHODS CreateKeys FOR DETERMINE ON MODIFY
+      IMPORTING keys FOR Request~CreateKeys. "Request.
+ENDCLASS.
+
+CLASS LCL_HANDLER IMPLEMENTATION.
+  METHOD GET_GLOBAL_AUTHORIZATIONS.
+  ENDMETHOD.
+
+  METHOD CreateKeys.
+
+    " Read entity to check if travel id is initial
+    READ ENTITIES OF ZTJ_I_REQUEST2 IN LOCAL MODE
+    ENTITY Request
+      FIELDS (  reqid )
+      WITH CORRESPONDING #( keys )
+    RESULT   DATA(lt_request_result).
+
+    " only modify entities where no travel_id is given
+    DELETE lt_request_result WHERE reqid IS NOT INITIAL.
+
+    LOOP AT lt_request_result ASSIGNING FIELD-SYMBOL(<fs_request>).
+      " get a new travel ID
+      DATA(lv_reqid_new) = 999. "get_number(  ).
+      <fs_request>-reqid = lv_reqid_new.
+    ENDLOOP.
+
+    MODIFY ENTITIES OF ZTJ_I_REQUEST2 IN LOCAL MODE
+      ENTITY request
+      UPDATE FROM VALUE #( FOR req IN lt_request_result
+                         (   uuid = req-%key-uuid
+                             reqid   = req-reqid
+                    %control-reqid   = if_abap_behv=>mk-on )  ).
+  ENDMETHOD.
+
+ENDCLASS.
