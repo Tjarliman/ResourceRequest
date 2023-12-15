@@ -1,0 +1,168 @@
+In a Manage RAP scenario, we can auto populate field for non-key field...(for key fields, i havent tried)...
+in sample below we try to give ReqID field an auto number
+
+1st, we need to create a UUID key field into the table and should not be any other fields as key fields
+@EndUserText.label : 'Request Resources'
+@AbapCatalog.enhancement.category : #NOT_EXTENSIBLE
+@AbapCatalog.tableCategory : #TRANSPARENT
+@AbapCatalog.deliveryClass : #A
+@AbapCatalog.dataMaintenance : #RESTRICTED
+define table ztj_request {
+  @AbapCatalog.foreignKey.screenCheck : true
+  key mandt : mandt not null
+    with foreign key t000
+      where mandt = ztj_request.mandt;
+  key uuid  : sysuuid_x16 not null;
+  prjid     : ztj_prjid not null;
+  sprid     : ztj_sprid not null;
+  reqid     : ztj_reqid not null;
+  reqds     : ztj_reqds;
+  reqor     : ztj_reqor;
+  reqdt     : ztj_reqdt;
+  resid     : ztj_resid;
+  reqcd     : ztj_reqcd;
+  plstdt    : ztj_plstdt;
+  plfndt    : ztj_plfndt;
+  acstdt    : ztj_acstdt;
+  acfndt    : ztj_acfndt;
+  @AbapCatalog.foreignKey.screenCheck : true
+  staid     : ztj_staid
+    with foreign key [1..*,1] ztj_reqstat
+      where mandt = ztj_request.mandt
+        and staid = ztj_request.staid;
+  include ztj_s_admfields;
+
+}
+
+2nd, also in the data model ("interface" cds view
+@AccessControl.authorizationCheck: #CHECK
+@EndUserText.label: '##GENERATED Request for Resources RAP Generated'
+define root view entity ZTJ_I_REQUEST2
+  as select from ztj_request as Request
+{
+  key uuid as UUID,
+  prjid as PrjID,
+  sprid as SprID,
+  reqid as ReqID,
+  reqds as Reqds,
+  reqor as Reqor,
+  reqdt as Reqdt,
+  resid as ResID,
+  reqcd as Reqcd,
+  plstdt as Plstdt,
+  plfndt as Plfndt,
+  acstdt as Acstdt,
+  acfndt as Acfndt,
+  staid as StaID,
+  @Semantics.user.createdBy: true
+  crtby as Crtby,
+  @Semantics.systemDate.createdAt: true
+  crtdt as Crtdt,
+  @Semantics.systemTime.createdAt: true
+  crttm as Crttm,
+  @Semantics.systemDateTime.createdAt: true
+  crtst as Crtst,
+  @Semantics.user.lastChangedBy: true
+  chgby as Chgby,
+  @Semantics.systemDate.createdAt: true
+  chgdt as Chgdt,
+  @Semantics.systemTime.createdAt: true
+  chgtm as Chgtm,
+  @Semantics.systemDateTime.lastChangedAt: true
+  chgst as Chgst
+  
+}
+
+3rd, also in the projection view or consumption cds view
+@AccessControl.authorizationCheck: #CHECK
+@Metadata.allowExtensions: true
+@EndUserText.label: 'Projection View for ZTJ_I_REQUEST2'
+define root view entity ZTJ_C_REQUEST2
+  provider contract transactional_query
+  as projection on ZTJ_I_REQUEST2
+{
+  key uuid,
+  prjid,
+  sprid,
+  reqid,
+  reqds,
+  reqor,
+  reqdt,
+  resid,
+  reqcd,
+  plstdt,
+  plfndt,
+  acstdt,
+  acfndt,
+  staid,
+  crttm,
+  crtst,
+  chgtm,
+  chgst
+  
+}
+
+4th, in the Behaviour Definition, put UUID as readonly, UUID as numbering : managed. 
+Add determination to determine the new number 
+managed implementation in class ZCL_TJ_REQUEST2 unique;
+strict ( 2 );
+with draft;
+
+define behavior for ZTJ_I_REQUEST2 alias Request
+persistent table ztj_request
+draft table ZTJ_REQ_DRAFT2
+lock master total etag Chgdt
+authorization master( global )
+
+{
+  field ( readonly )
+   UUID,                             // <= set the UUID and ReqID as readonly
+   ReqID,
+   Crtdt,
+   Crtby,
+   Chgdt,
+   Chgby;
+
+  field ( numbering : managed )
+   UUID;                              // <= numbering: managed to auto populate the UUID
+
+
+  create;
+  update;
+  delete;
+
+  //** optional determination to determine the travel ID
+  determination CreateKeys on modify { create; } // <= determination
+
+  draft action Edit;
+  draft action Activate;
+  draft action Discard;
+  draft action Resume;
+  draft determine action Prepare;
+
+  mapping for ZTJ_REQUEST
+  {
+    UUID = UUID;
+    PrjID = PRJID;
+    SprID = SPRID;
+    ReqID = REQID;
+    Reqds = REQDS;
+    Reqor = REQOR;
+    Reqdt = REQDT;
+    ResID = RESID;
+    Reqcd = REQCD;
+    Plstdt = PLSTDT;
+    Plfndt = PLFNDT;
+    Acstdt = ACSTDT;
+    Acfndt = ACFNDT;
+    StaID = STAID;
+    Crtby = CRTBY;
+    Crtdt = CRTDT;
+    Crttm = CRTTM;
+    Crtst = CRTST;
+    Chgby = CHGBY;
+    Chgdt = CHGDT;
+    Chgtm = CHGTM;
+    Chgst = CHGST;
+  }
+}
