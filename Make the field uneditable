@@ -1,0 +1,70 @@
+During create or edit a record, sometimes we want to make a certain field un-editable
+this can be achieved in the Interface BDEF, by flagin that certain field as readonly.
+
+Sample below will make field "ReqID" readonly....pls. be noted the comment !!!
+
+managed implementation in class ZCL_TJ_REQUEST2 unique;
+strict ( 2 );
+with draft;
+
+define behavior for ZTJ_I_REQUEST2 alias Request
+persistent table ztj_request
+draft table ZTJ_REQ_DRAFT2
+lock master total etag Chgdt
+authorization master( global )
+
+{
+  field ( readonly )
+   UUID,                     
+// ReqID,       <= if we put it here, it wont work !!!!!
+   Crtdt,
+   Crtby,
+   Chgdt,
+   Chgby;
+
+  field ( numbering : managed )
+   UUID;
+
+  field ( readonly )
+    ReqID;          // <= this has to be separated from other read only fields !!!!
+
+
+  create;
+  update;
+  delete;
+
+  //** optional determination to determine the travel ID
+  determination CreateKeys on modify { create; }
+
+  draft action Edit;
+  draft action Activate;
+  draft action Discard;
+  draft action Resume;
+  draft determine action Prepare;
+
+  mapping for ZTJ_REQUEST
+  {
+    UUID = UUID;
+    PrjID = PRJID;
+    SprID = SPRID;
+    ReqID = REQID;
+    Reqds = REQDS;
+    Reqor = REQOR;
+    Reqdt = REQDT;
+    ResID = RESID;
+    Reqcd = REQCD;
+    Plstdt = PLSTDT;
+    Plfndt = PLFNDT;
+    Acstdt = ACSTDT;
+    Acfndt = ACFNDT;
+    StaID = STAID;
+    Crtby = CRTBY;
+    Crtdt = CRTDT;
+    Crttm = CRTTM;
+    Crtst = CRTST;
+    Chgby = CHGBY;
+    Chgdt = CHGDT;
+    Chgtm = CHGTM;
+    Chgst = CHGST;
+  }
+}
