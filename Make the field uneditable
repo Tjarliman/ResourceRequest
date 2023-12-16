@@ -28,6 +28,10 @@ authorization master( global )
   field ( readonly )
     ReqID;          // <= this has to be separated from other read only fields !!!!
 
+// we can also set the field, mandatory during create, but readonly during edit, this is so cool
+  //field ( mandatory: create, readonly: update )
+  //  ReqID;
+
 
   create;
   update;
