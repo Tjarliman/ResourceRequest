@@ -37,7 +37,7 @@ authorization master( global )
   update;
   delete;
 
-  //** optional determination to determine the travel ID
+  //** optional determination to determine the reqid
   determination CreateKeys on modify { create; }
 
   draft action Edit;
