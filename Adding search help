@@ -1,0 +1,4 @@
+1. Create CDS views as search help source data (ZTJ_VH_REQSTAT)
+2. Use annotation as below in the projection view
+@Consumption.valueHelpDefinition: [{  entity: {   name: 'ZTJ_VH_REQSTAT',
+                                            element:    'StaID' } }]
