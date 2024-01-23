@@ -16,8 +16,8 @@ authorization master( global )
 {
   field ( readonly )
    UUID,                     
-// ReqID,       <= if we put it here, it wont work !!!!!
-   Crtdt,       <= this fields must also be exist in consumption view
+// ReqID,       
+   Crtdt,       <= this fields must also be exist in consumption view !!!
    Crtby,
    Chgdt,
    Chgby;
