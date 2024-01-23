@@ -1,0 +1,31 @@
+@EndUserText.label : 'Request Resources'
+@AbapCatalog.enhancement.category : #NOT_EXTENSIBLE
+@AbapCatalog.tableCategory : #TRANSPARENT
+@AbapCatalog.deliveryClass : #A
+@AbapCatalog.dataMaintenance : #RESTRICTED
+define table ztj_request {
+  @AbapCatalog.foreignKey.screenCheck : true
+  key mandt : mandt not null
+    with foreign key t000
+      where mandt = ztj_request.mandt;
+  key uuid  : sysuuid_x16 not null;
+  prjid     : ztj_prjid not null;
+  sprid     : ztj_sprid not null;
+  reqid     : ztj_reqid not null;
+  reqds     : ztj_reqds;
+  reqor     : ztj_reqor;
+  reqdt     : ztj_reqdt;
+  resid     : ztj_resid;
+  reqcd     : ztj_reqcd;
+  plstdt    : ztj_plstdt;
+  plfndt    : ztj_plfndt;
+  acstdt    : ztj_acstdt;
+  acfndt    : ztj_acfndt;
+  @AbapCatalog.foreignKey.screenCheck : true
+  staid     : ztj_staid
+    with foreign key [1..*,1] ztj_reqstat
+      where mandt = ztj_request.mandt
+        and staid = ztj_request.staid;
+  include ztj_s_admfields;
+
+}
