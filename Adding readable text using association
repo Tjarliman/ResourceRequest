@@ -1,0 +1,44 @@
+1. in the source CDS view 
+define view entity ZTJ_VH_RESOURCES
+  as select from ztj_resources
+{
+      @ObjectModel.text.element: ['Name1']
+  key resid as ResID,
+      @Semantics.text: true
+      name1 as Name1
+}
+
+2. in the consumption CDS view (projection view, and here we can just use the association name, _Res, coming from interface view)
+define root view entity ZTJ_C_REQUEST2
+  provider contract transactional_query
+  as projection on ZTJ_I_REQUEST2
+{
+  key UUID,
+      PrjID,
+      SprID,
+      ReqID,
+      Reqds,
+      Reqor,
+      Reqdt,
+      @ObjectModel.text.element: ['Name1'] //<=  Name1 defined in line 27      
+      @Consumption.valueHelpDefinition: [{  entity: {   name: 'ZTJ_VH_RESOURCES',
+                                                element:    'ResID' }, useForValidation: true }]
+      ResID,
+      _Res.Name1 as Name1,
+      Reqcd,
+      Plstdt,
+      Plfndt,
+      Acstdt,
+      Acfndt,
+      @ObjectModel.text.element: ['Stads'] //<=
+      StaID,
+      _Stat.Stads : localized, // <=
+      Crttm,
+      Crtst,
+      Chgtm,
+      Chgst,
+
+      _Stat,
+      _Res
+
+}
