@@ -1,0 +1,47 @@
+Action button is a custom button that we can place along with the Create / Delete button
+to activate it
+
+1. in the Interface BDEF, add this statement : action startDevelop result [1] $self; 
+This statement means, add method startDevelop to handle the click button event and the results of this action will affect only 1 records at a time (depends on how we build the logic).
+
+2. inside the bdef class, we need to add this method, by implementing this statements:
+# at the implementation part
+  METHOD startDevelop.
+    " Modify in local mode: BO-related updates that are not relevant for authorization checks
+    MODIFY ENTITIES OF ztj_i_request2 IN LOCAL MODE
+           ENTITY Request
+              UPDATE FIELDS ( Acstdt )
+                 WITH VALUE #( FOR key IN keys ( %tky      = key-%tky
+                                                 Acstdt = sy-datum ) ). " Accepted
+
+    " Read changed data for action result
+    READ ENTITIES OF ztj_i_request2 IN LOCAL MODE
+      ENTITY Request
+         ALL FIELDS WITH
+         CORRESPONDING #( keys )
+       RESULT DATA(requests).
+
+    result = VALUE #( FOR request IN requests ( %tky      = request-%tky
+                                              %param    = request ) ).
+
+  ENDMETHOD.
+
+# at the definition part
+    METHODS startDevelop FOR MODIFY
+      IMPORTING keys FOR ACTION Request~startDevelop RESULT result. "Request.
+
+3. inside metadata extension of our projection view, put this statement along with one of the @UI.lineItem annotation, like :
+@UI.lineItem: [ {
+    position: 110 ,
+    importance: #MEDIUM
+  },
+  
+  { type: #FOR_ACTION, dataAction: 'startDevelop', label: 'Start', position: 5 }, => can be placed at any @UI.lineItem
+  { type: #FOR_ACTION, dataAction: 'finishDevelop', label: 'Finish', position: 6 } ]
+  @UI.identification: [ 
+  { position: 110  } ]
+  Acstdt;
+
+Note: 
+1. using @UI.lineItem annotation will make the button appear together with Create/Delete button
+2. using @UI.Identification annotation will make the button appear at the object page together with Edit/Delete button
